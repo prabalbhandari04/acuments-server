@@ -86,6 +86,42 @@ app.get('/movies/:id', async (req, res) => {
   }
 });
 
+
+// creating a service to fecth movie by id for crud watchlist 
+// Memoization caching strategy to prevent rate limiting
+const memoize = (fn) => {
+  const cache = new Map();
+  return async (...args) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = await fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+};
+
+const fetchMovieById = memoize(async (id) => {
+  const response = await axios.get(`${BASE_URL}/movie/${id}`, {
+    params: { api_key: API_KEY },
+  });
+  return response.data;
+});
+
+app.post('/watchlist', async (req, res) => {
+  const { movieId } = req.body;
+  try {
+    const movie = await fetchMovieById(movieId);
+    const savedMovie = await Movie.create(movie);
+    res.status(201).json(savedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
 // GET / test endpoint
 app.get('/', (req, res) => {
   res.send('Hello World!');
