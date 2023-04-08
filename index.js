@@ -70,6 +70,23 @@ app.get('/movies', async (req, res) => {
   }
 });
 
+// GET /movies/:id endpoint 
+app.get('/movies/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.get(`${BASE_URL}/movie/${id}`, {
+      params: {
+        api_key: API_KEY
+      }
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET / test endpoint
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
