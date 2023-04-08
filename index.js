@@ -26,5 +26,16 @@ const movieSchema = new mongoose.Schema({
     vote_average: Number,
     original_language: String,
   });
-    // Define the movie model
-  const Movie = mongoose.model('Movie', movieSchema);
+
+// Define the watchlist item schema
+const watchlistItemSchema = new mongoose.Schema({
+    movieId: Number,
+    title: String,
+    poster_path: String,
+    watched: Boolean,
+  });
+
+// Define the movie model
+const Movie = mongoose.model('Movie', movieSchema);
+// Define the watchlist item model
+const WatchlistItem = mongoose.model('WatchlistItem', watchlistItemSchema);
