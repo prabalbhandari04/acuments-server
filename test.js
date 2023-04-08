@@ -76,5 +76,11 @@ describe('fetchMovieById', () => {
     );
   });
 
-  
+  it('should throw an error if API call fails', async () => {
+    const errorMessage = 'Internal server error';
+    axios.get.mockRejectedValueOnce({ response: { data: { error: errorMessage } } });
+
+    await expect(fetchMovieById(123)).rejects.toThrowError(errorMessage);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+  });
 });
