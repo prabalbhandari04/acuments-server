@@ -124,7 +124,7 @@ app.post('/watchlist', async (req, res) => {
 });
 
 // GET /watchlist get watchlist 
-router.get('/watchlist', async (req, res) => {
+app.get('/watchlist', async (req, res) => {
   try {
     const movies = await Movie.find();
     res.json(movies);
@@ -134,6 +134,17 @@ router.get('/watchlist', async (req, res) => {
   }
 });
 
+// DELETE /watchlist/:id delete watchlist 
+app.delete('/watchlist/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Movie.findByIdAndDelete(id);
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // GET / test endpoint
 app.get('/', (req, res) => {
