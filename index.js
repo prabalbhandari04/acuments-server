@@ -109,12 +109,25 @@ const fetchMovieById = memoize(async (id) => {
   return response.data;
 });
 
+
+// POST /watchlist post watchlist 
 app.post('/watchlist', async (req, res) => {
   const { movieId } = req.body;
   try {
     const movie = await fetchMovieById(movieId);
     const savedMovie = await Movie.create(movie);
     res.status(201).json(savedMovie);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// GET /watchlist get watchlist 
+router.get('/watchlist', async (req, res) => {
+  try {
+    const movies = await Movie.find();
+    res.json(movies);
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
