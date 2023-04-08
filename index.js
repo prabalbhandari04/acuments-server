@@ -35,7 +35,45 @@ const watchlistItemSchema = new mongoose.Schema({
     watched: Boolean,
   });
 
-// Define the movie model
+// Define the movie and watchlist model
 const Movie = mongoose.model('Movie', movieSchema);
-// Define the watchlist item model
 const WatchlistItem = mongoose.model('WatchlistItem', watchlistItemSchema);
+
+// import api key from env file and get base url
+const API_KEY = process.env.MOVIE_DB_API_KEY;
+const BASE_URL = 'https://api.themoviedb.org/3';
+
+// GET /movies endpoint
+app.get('/movies', async (req, res) => {
+  try {
+    const { page, sort_by, year, language } = req.query;
+    const response = await axios.get(`${BASE_URL}/discover/movie`, {
+      params: {
+        api_key: API_KEY,
+        page: page || 1,
+        sort_by: sort_by || 'popularity.desc',
+        primary_release_year: year || '',
+        with_original_language: language || ''
+      }
+    });
+    const { results, total_pages } = response.data;
+    const updatedResults = results.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      poster_path: movie.poster_path,
+      release_date: movie.release_date
+    }));
+    res.json({ results: updatedResults, total_pages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+app.listen(5050, () => {
+  console.log('Server is running on port 5050');
+});
