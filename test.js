@@ -52,7 +52,29 @@ describe('fetchMovieById', () => {
     );
   });
 
-  
+  it('should return cached data for subsequent calls with same arguments', async () => {
+    const movieData = {
+      id: 123,
+      title: 'The Matrix',
+      overview: 'A computer hacker learns about the true nature of reality.',
+      poster_path: '/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg',
+      release_date: '1999-03-30',
+      vote_average: 8.1,
+      original_language: 'en',
+    };
+    axios.get.mockResolvedValueOnce({ data: movieData });
+
+    const result1 = await fetchMovieById(123);
+    const result2 = await fetchMovieById(123);
+
+    expect(result1).toEqual(movieData);
+    expect(result2).toEqual(movieData);
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://api.themoviedb.org/3/movie/123',
+      { params: { api_key: process.env.MOVIE_DB_API_KEY } },
+    );
+  });
 
   
 });
