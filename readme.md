@@ -22,7 +22,12 @@
   - Instantly see movie details.
 * Infinite Scrolling
   - Infinite movie details while you scroll.
-
+* Watchlist
+  - As if remembering your grocery list was not enough.
+* Sort By Language
+  - Watch movies in your favourite language.
+* Sort By Released Date
+  - Go back in time and watch movies.
 
 ## How To Use
 
