@@ -110,29 +110,54 @@ const fetchMovieById = memoize(async (id) => {
 });
 
 
-// POST /watchlist post watchlist 
+// POST /watchlist endpoint to create a new watchlist item
 app.post('/watchlist', async (req, res) => {
-  const { movieId } = req.body;
   try {
-    const movie = await fetchMovieById(movieId);
-    const savedMovie = await Movie.create(movie);
-    res.status(201).json(savedMovie);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+  const { movieId } = req.body;
+  const movie = await fetchMovieById(movieId);
+  if (!movie) {
+  return res.status(404).json({ error: 'Movie not found' });
   }
-});
+  const watchlistItem = new WatchlistItem({
+  movieId: movie.id,
+  title: movie.title,
+  poster_path: movie.poster_path,
+  watched: false,
+  });
+  await watchlistItem.save();
+  res.json(watchlistItem);
+  } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Internal server error' });
+  }
+  });
 
 // GET /watchlist get watchlist 
 app.get('/watchlist', async (req, res) => {
   try {
-    const movies = await Movie.find();
+    const movies = await WatchlistItem.find();
     res.json(movies);
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
+
+// GET /watchlist/:movieId endpoint to retrieve a watchlist item by movie ID
+app.get('/watchlistId/:movieId', async (req, res) => {
+  try {
+  const { movieId } = req.params;
+  const watchlistItem = await WatchlistItem.findOne({ movieId });
+  if (!watchlistItem) {
+  return res.status(404).json({ error: 'Watchlist item not found' });
+  }
+  res.json(watchlistItem);
+  } catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Internal server error' });
+  }
+  });
+
 
 // DELETE /watchlist/:id delete watchlist 
 app.delete('/watchlist/:id', async (req, res) => {
